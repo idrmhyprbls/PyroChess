@@ -1,19 +1,187 @@
-from __future__ import division, print_function
-import os
-import re
-import pudb
-import string
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+"""Simple python script template.
+
+COPYRIGHT & LICENSE
+===================
+
+  - See below
+
+USAGE
+=====
+
+  - `$ python %.py`
+  - `$ ./%.py # if executable`
+  - `$ nosetests %.py`
+
+WARNING
+=======
+
+  - N/a
+
+NOTE
+====
+
+  - Run all modules through pyflakes, pylint, & pydoc
+
+TODO
+====
+
+  - N/a
+
+"""
+from __future__ import print_function, with_statement, division
+
+# METADATA
+#
+__creator__ = "Matt Busby"
+__date__ = "1 June, 2015"  # Created
+__email__ = "@idrmhyprbls"
+__program__ = "PyroChess"
+__version__ = "0.1.0a"  # Release
+__project__ = "https://github.com/idrmhyprbls/"  # Website
+__author__ = "{0} {1}".format(__creator__, __email__)
+__credits__ = "N/a"  # References
+__contributors__ = "N/a"
+__compiler__ = "N/a"  # Designed with
+__os__ = "Fedora 21 Linux 64bit"  # Designed on
+__copyright__ = "Copyright (c) {year}, {owner}. ".format(
+    owner=__author__,
+    year="2015-2016") + \
+    "All rights reserved."
+__licence__      = """\
+        BSD 3-Clause License
+
+        {copyright}
+
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions
+        are met:
+
+        1. Redistributions of source code must retain the above copyright
+           notice, this list of conditions and the following disclaimer.
+
+        2. Redistributions in binary form must reproduce the above copyright
+           notice, this list of conditions and the following disclaimer in
+           the documentation and/or other materials provided with the
+           distribution.
+
+        3. Neither the name of the copyright holder nor the names of its
+           contributors may be used to endorse or promote products derived
+           from this software without specific prior written permission.
+
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+        "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+        LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+        FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+        COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+        INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+        BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+        LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+        LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+        WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+        POSSIBILITY OF SUCH DAMAGE.
+        """.format(copyright=__copyright__)
+
+# IMPORTS
+#
+IMPORT_ERRORS = []  # Import errors to log after opt parsing for a logger level
+
+# BUILT-IN/SYSTEM
+from datetime import datetime
+from functools import wraps
+import argparse
 import logging
-logging.basicConfig(level=logging.DEBUG)
+import nose
+import nose.tools
+import os
+import platform
+import re
+import string
+import struct
+import sys
+import time
 
+# CONFLICTING
+try:
+    import pudb as pdb
+except ImportError:
+    IMPORT_ERRORS.append("Can't import 'pudb', using 'pdb'!")
+    import pdb
+
+# ENV DATA
+#
+ARCH = "64bit" if struct.calcsize("P") else "32bit"  # OS
+ARCHP = platform.architecture()[0]  # Current python
+DATE = datetime.isoformat(datetime.today())
+HOME = os.path.expanduser('~')
+OS = platform.system()  # Darwin, Windows, Linux
+PLAT = sys.platform  # darwin, win32, linux/linux2
+PWD = os.getcwd()
+REL = platform.release()  # Windows release else kernel version
+USER = os.getlogin()
+VER = "{0}.{1}".format(sys.version_info[0], sys.version_info[1])
+
+# GLOBALS
+#
 GAME_TYPE = 'normal'
-
-# Runtime constants
 DNUM = {'normal': 8}[GAME_TYPE]  # 8, 16, ..
 RANK = range(1, DNUM + 1)        # 1, 2, ..
 FILE = string.lowercase[:DNUM]   # a, b, ..
 
+# DECORATORS
+#
+
+
+def entry_exit(func):
+    """Decorator."""
+    def log_final_time(func, t_i):
+        """Log final function execution time."""
+        t_f = time.time()
+        logging.info("Exiting {}() after {:.3f} sec.".format(func, t_f - t_i))
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        """Replacement."""
+        logging.info("Entering {}()..".format(func.__name__))
+        t_i = time.time()
+        try:
+            rtn = func(*args, **kwargs)
+        except:
+            log_final_time(func.__name__, t_i)
+            raise
+        else:
+            log_final_time(func.__name__, t_i)
+        return rtn
+    return wrapper
+
+# CLASSES
+#
+
+
+class TestModule(object):
+    """Nose test class."""
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def setup_class(cls):
+        """Sets up the test."""
+
+    @classmethod
+    def teardown_class(cls):
+        """Tears down the test."""
+        pass
+
+    def test_main(self):
+        """Test call to main."""
+        nose.tools.eq_(main(), None)
+
+
 class Square(object):
+
     def __init__(self, idx):
         self.idx = idx
         self.file, self.rank = Square.idx_to_fr(idx)
@@ -48,7 +216,7 @@ class Square(object):
         elif isinstance(pos, tuple):
             idx = Square.fr_to_idx(*pos)
         elif isinstance(pos, int):
-            if pos >= 0 and pos < DNUM*DNUM:
+            if pos >= 0 and pos < DNUM * DNUM:
                 idx = pos
         elif isinstance(pos, str):
             idx = Square.str_to_idx(pos)
@@ -56,7 +224,7 @@ class Square(object):
 
     @staticmethod
     def idx_to_fr(square):
-        if square is None or square < 0 or square >= DNUM*DNUM:
+        if square is None or square < 0 or square >= DNUM * DNUM:
             logging.info('{0}'.format(square))
             return None, None
         return FILE[square % DNUM], (square // DNUM) + 1
@@ -82,8 +250,10 @@ class Square(object):
         except:
             return None
 
+
 class Piece(object):
     point = 0.
+
     def __init__(self, team, square=None):
         """"""
         self.team = team
@@ -93,10 +263,10 @@ class Piece(object):
 
     def __str__(self):
         return '{0}: {2}({3}) {1}\n'.format(
-                self.team,
-                repr(self.square),
-                self.symbol,
-                self.point)
+            self.team,
+            repr(self.square),
+            self.symbol,
+            self.point)
 
     def active(self):
         return self.square is not None
@@ -135,8 +305,10 @@ class Piece(object):
     def fr_ul(self):
         return zip(self.file_left(), self.rank_up())
 
+
 class King(Piece):
-    point = 1000. # 3.3 Attack
+    point = 1000.  # 3.3 Attack
+
     def __init__(self, *args, **kwargs):
         """"""
         super(King, self).__init__(*args, **kwargs)
@@ -145,8 +317,8 @@ class King(Piece):
     def valid_moves(self, squares):
         # TODO Use a generator
         idxs = []
-        for file, rank in ((0, 1), (1, 1), (1, 0), (1, -1), \
-                (0, -1), (-1, -1), (-1, 0), (-1, 1)):
+        for file, rank in ((0, 1), (1, 1), (1, 0), (1, -1),
+                           (0, -1), (-1, -1), (-1, 0), (-1, 1)):
             flu = chr(ord(self.square.file) + file)
             rlu = self.square.rank + rank
             idx = Square.lookup((flu, rlu))
@@ -160,8 +332,10 @@ class King(Piece):
             moves.append(square)
         return moves
 
+
 class Queen(Piece):
     point = 9.
+
     def __init__(self, *args, **kwargs):
         """"""
         super(Queen, self).__init__(*args, **kwargs)
@@ -170,10 +344,12 @@ class Queen(Piece):
     def valid_moves(self, squares):
         # TODO Probably not going to work
         return Rook(self.team, self.square).valid_moves(squares) + \
-                Bishop(self.team, self.square).valid_moves(squares)
+            Bishop(self.team, self.square).valid_moves(squares)
+
 
 class Rook(Piece):
     point = 5.
+
     def __init__(self, *args, **kwargs):
         """"""
         super(Rook, self).__init__(*args, **kwargs)
@@ -203,8 +379,10 @@ class Rook(Piece):
                     break
         return moves
 
+
 class Bishop(Piece):
     point = 3.25
+
     def __init__(self, *args, **kwargs):
         """"""
         super(Bishop, self).__init__(*args, **kwargs)
@@ -224,6 +402,7 @@ class Bishop(Piece):
                     break
         return moves
 
+
 class Knight(Piece):
     point = 3.
 
@@ -235,8 +414,8 @@ class Knight(Piece):
     def valid_moves(self, squares):
         # TODO Use a generator
         idxs = []
-        for file, rank in ((1, 2), (2, 1), (2, -1), (1, -2), \
-                (-1, -2), (-2, -1), (-2, 1), (-1, 2)):
+        for file, rank in ((1, 2), (2, 1), (2, -1), (1, -2),
+                           (-1, -2), (-2, -1), (-2, 1), (-1, 2)):
             flu = chr(ord(self.square.file) + file)
             rlu = self.square.rank + rank
             idx = Square.lookup((flu, rlu))
@@ -249,6 +428,7 @@ class Knight(Piece):
                 continue
             moves.append(square)
         return moves
+
 
 class Pawn(Piece):
     point = 1.
@@ -270,8 +450,8 @@ class Pawn(Piece):
 
         # Captures
         for file_dir in (-1, 1):
-            idx = Square.lookup((chr(ord(self.square.file) + file_dir), \
-                    self.square.rank + step))
+            idx = Square.lookup((chr(ord(self.square.file) + file_dir),
+                                 self.square.rank + step))
             if idx:
                 square = squares[idx]
                 if square.occupied() and square.piece.team != self.team:
@@ -286,21 +466,23 @@ class Pawn(Piece):
 
         # Forward double move
         if self.square.rank == base_rank:
-            idx = Square.lookup((self.square.file, self.square.rank + \
-                    2 * step))
+            idx = Square.lookup((self.square.file, self.square.rank +
+                                 2 * step))
             if idx:
                 square = squares[idx]
                 if not square.occupied():
                     moves.append(square)
         return moves
 
+
 class Board(object):
+
     def __init__(self):
         """"""
         self.new_game()
 
     def reinit(self):
-        self.squares = [Square(idx) for idx in range(DNUM*DNUM)]
+        self.squares = [Square(idx) for idx in range(DNUM * DNUM)]
         self.white = []
         self.black = []
 
@@ -311,8 +493,9 @@ class Board(object):
     def place(self, piece, pos):
         square = self.lookup(pos)
         if square:
-            if piece.square is not None: # If not assembling board
-                if square not in piece.valid_moves(self.squares): # Check for valid move...
+            if piece.square is not None:  # If not assembling board
+                if square not in piece.valid_moves(
+                        self.squares):  # Check for valid move...
                     return None
                 piece.square.piece = None  # Remove last location
             square.clear()  # Capture any piece on square
@@ -328,45 +511,46 @@ class Board(object):
 
     def new_game(self):
         self.reinit()
-        self.add('w', King,   ('e', 1))
-        self.add('w', Queen,  ('d', 1))
-        self.add('w', Rook,   ('a', 1))
-        self.add('w', Rook,   ('h', 1))
+        self.add('w', King, ('e', 1))
+        self.add('w', Queen, ('d', 1))
+        self.add('w', Rook, ('a', 1))
+        self.add('w', Rook, ('h', 1))
         self.add('w', Bishop, ('c', 1))
         self.add('w', Bishop, ('f', 1))
         self.add('w', Knight, ('b', 1))
         self.add('w', Knight, ('g', 1))
-        self.add('w', Pawn,   ('a', 2))
-        self.add('w', Pawn,   ('b', 2))
-        self.add('w', Pawn,   ('c', 2))
-        self.add('w', Pawn,   ('d', 2))
-        self.add('w', Pawn,   ('e', 2))
-        self.add('w', Pawn,   ('f', 2))
-        self.add('w', Pawn,   ('g', 2))
-        self.add('w', Pawn,   ('h', 2))
-        self.add('b', King,   ('e', 8))
-        self.add('b', Queen,  ('d', 8))
-        self.add('b', Rook,   ('a', 8))
-        self.add('b', Rook,   ('h', 8))
+        self.add('w', Pawn, ('a', 2))
+        self.add('w', Pawn, ('b', 2))
+        self.add('w', Pawn, ('c', 2))
+        self.add('w', Pawn, ('d', 2))
+        self.add('w', Pawn, ('e', 2))
+        self.add('w', Pawn, ('f', 2))
+        self.add('w', Pawn, ('g', 2))
+        self.add('w', Pawn, ('h', 2))
+        self.add('b', King, ('e', 8))
+        self.add('b', Queen, ('d', 8))
+        self.add('b', Rook, ('a', 8))
+        self.add('b', Rook, ('h', 8))
         self.add('b', Bishop, ('c', 8))
         self.add('b', Bishop, ('f', 8))
         self.add('b', Knight, ('b', 8))
         self.add('b', Knight, ('g', 8))
-        self.add('b', Pawn,   ('a', 7))
-        self.add('b', Pawn,   ('b', 7))
-        self.add('b', Pawn,   ('c', 7))
-        self.add('b', Pawn,   ('d', 7))
-        self.add('b', Pawn,   ('e', 7))
-        self.add('b', Pawn,   ('f', 7))
-        self.add('b', Pawn,   ('g', 7))
-        self.add('b', Pawn,   ('h', 7))
+        self.add('b', Pawn, ('a', 7))
+        self.add('b', Pawn, ('b', 7))
+        self.add('b', Pawn, ('c', 7))
+        self.add('b', Pawn, ('d', 7))
+        self.add('b', Pawn, ('e', 7))
+        self.add('b', Pawn, ('f', 7))
+        self.add('b', Pawn, ('g', 7))
+        self.add('b', Pawn, ('h', 7))
 
-    def add(self, team, echelon, (file, rank)):
+    def add(self, team, echelon, pos):
+        (file, rank) = pos
         if team == 'w':
             piece = echelon(team)
             self.white.append(piece)
             self.place(piece, (file, rank))
-        elif team =='b':
+        elif team == 'b':
             piece = echelon(team)
             self.black.append(piece)
             self.place(piece, (file, rank))
@@ -400,11 +584,13 @@ class Board(object):
         rtn += '   {0}'.format(' '.join([file.upper() for file in FILE]))
         return rtn
 
+
 class Game(object):
+
     def __init__(self):
         """"""
         self.board = Board()
-        self.turn = 0;  # Turn 1: 0/1, Turn 2: 2/3 ..
+        self.turn = 0  # Turn 1: 0/1, Turn 2: 2/3 ..
         self.time_tot = None
         self.time_black = None
         self.time_white = None
@@ -451,8 +637,8 @@ class Game(object):
         fen['moves'] = '1'
 
         return ' '.join(['/'.join(fen['lines']),
-                fen['turn'], fen['castle'], fen['enpassant'],
-                fen['capture'], fen['moves']])
+                         fen['turn'], fen['castle'], fen['enpassant'],
+                         fen['capture'], fen['moves']])
 
     def to_pgn(self):
         """"""
@@ -489,14 +675,15 @@ class Game(object):
         move = move.strip()
         move.replace(' ', '').replace('-', '').replace('?', '')
         move.replace('!', '').replace('+', '')
-        echelon = move[0].lower() if move[0] in 'KQRBNP' else ''
-        if specify:
+        echelon = move[0].lower() if move[
+            0] in 'KQRBNP' else ''  # TODO unused?
+        if specify:  # TODO Undefined
             move = move[1:]
         capture = 'x' in move
         if capture:
-            move.replace('x','')
+            move.replace('x', '')
         else:
-            move.k# TODO
+            move.k  # TODO YAH
         file = move[0] in FILE
 
         m1 = re.findall('[a-zA-Z]+', move)
@@ -513,7 +700,7 @@ class Game(object):
 
     def run(self):
         input2_ = ''
-        while 1:
+        while True:
             os.system('clear')
             self.board.move(*self.parse_move(input2_))
             self.board.update()
@@ -523,15 +710,76 @@ class Game(object):
             # for each in self.board.white:
             #     print(each)
             print(self.to_fen())
-            print('Turn {0}{1}: '.format(self.turn//2 + 1, 'b' if self.turn % 2 \
-                    else 'w'), end='')
+            print('Turn {0}{1}: '.format(self.turn // 2 + 1, 'b' if self.turn % 2
+                                         else 'w'), end='')
             input2_ = raw_input()
             self.turn += 1
 
-try:
+# FUNCTIONS
+#
+
+
+def parse_argv():
+    "Parse input arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action='store_true',
+                        default=False, help='debug')
+    parser.add_argument('-m', '--post_mortem', action='store_true',
+                        default=False, help='enter port mortem on exception')
+    parser.add_argument('arg', metavar='A', type=str, nargs='?',
+                        default='', help='optional arg')
+    opts = parser.parse_args()  # OR opts, _ = parser.parse_known_args()
+    return {'arg': opts.arg,
+            'debug': opts.debug,
+            'post_mortem': opts.post_mortem}
+
+# MAIN
+#
+
+
+@entry_exit
+def main():
+    """..."""
     game = Game()
     game.run()
-except KeyboardInterrupt:
+
+# EXECUTION
+#
+if __name__ == '__main__':
+    # Global options
+    OPT = parse_argv()
+    if OPT.get('debug'):
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARN)
+
+    # Print any import issues."""
+    for each in IMPORT_ERRORS:
+        logging.warn(each)
+    del IMPORT_ERRORS
+
+    # Clear screen on start
+    if OPT.get('cls'):
+        if 'win' in OS:
+            os.system("cls")
+        else:
+            os.system("clear")
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except Exception as err:
+        # Unhandeld exception
+        if OPT.get('post_mortem'):
+            logging.exception(err)
+            pdb.post_mortem()  # 'e' to view
+        else:
+            raise
+    else:
+        # Wait for exit confirmation
+        if OPT.get('pause'):
+            raw_input("Press ENTER to continue...")
+else:
+    # If imported
     pass
-except:
-    pudb.post_mortem()
