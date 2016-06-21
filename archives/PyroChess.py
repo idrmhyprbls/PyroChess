@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- encoding: utf-8 -*-
-"""Simple python script template.
+"""A pre-alpha chess engine forged in the fires of Python awesomeness.
 
 COPYRIGHT & LICENSE
 ===================
@@ -27,22 +27,20 @@ NOTE
 TODO
 ====
 
-  - N/a
+  - Still in alpha...
 
 """
 from __future__ import print_function, with_statement, division
 
-# METADATA
-#
 __creator__ = "Matt Busby"
 __date__ = "1 June, 2015"  # Created
-__email__ = "@idrmhyprbls"
-__program__ = "PyroChess"
+__email__ = "@idrmhyprbls"  # GitHub
+__program__ = "PyroChess"  # Title
 __version__ = "0.1.0a"  # Release
 __project__ = "https://github.com/idrmhyprbls/"  # Website
-__author__ = "{0} {1}".format(__creator__, __email__)
-__credits__ = "N/a"  # References
-__contributors__ = "N/a"
+__author__ = "{} {}".format(__creator__, __email__)
+__credits__ = "N/a"  # References  '\n'-separated
+__contributors__ = "N/a"  # '\n'-separated
 __compiler__ = "N/a"  # Designed with
 __os__ = "Fedora 21 Linux 64bit"  # Designed on
 __copyright__ = "Copyright (c) {year}, {owner}. ".format(
@@ -84,11 +82,8 @@ __licence__      = """\
         POSSIBILITY OF SUCH DAMAGE.
         """.format(copyright=__copyright__)
 
-# IMPORTS
-#
 IMPORT_ERRORS = []  # Import errors to log after opt parsing for a logger level
 
-# BUILT-IN/SYSTEM
 from datetime import datetime
 from functools import wraps
 import argparse
@@ -103,15 +98,13 @@ import struct
 import sys
 import time
 
-# CONFLICTING
 try:
     import pudb as pdb
 except ImportError:
     IMPORT_ERRORS.append("Can't import 'pudb', using 'pdb'!")
     import pdb
 
-# ENV DATA
-#
+# System
 ARCH = "64bit" if struct.calcsize("P") else "32bit"  # OS
 ARCHP = platform.architecture()[0]  # Current python
 DATE = datetime.isoformat(datetime.today())
@@ -121,17 +114,14 @@ PLAT = sys.platform  # darwin, win32, linux/linux2
 PWD = os.getcwd()
 REL = platform.release()  # Windows release else kernel version
 USER = os.getlogin()
-VER = "{0}.{1}".format(sys.version_info[0], sys.version_info[1])
+VER = "{}.{}".format(sys.version_info[0], sys.version_info[1])
 
-# GLOBALS
-#
+# Game
+DEBUG = True
 GAME_TYPE = 'normal'
 DNUM = {'normal': 8}[GAME_TYPE]  # 8, 16, ..
 RANK = range(1, DNUM + 1)        # 1, 2, ..
 FILE = string.lowercase[:DNUM]   # a, b, ..
-
-# DECORATORS
-#
 
 
 def entry_exit(func):
@@ -139,12 +129,12 @@ def entry_exit(func):
     def log_final_time(func, t_i):
         """Log final function execution time."""
         t_f = time.time()
-        logging.info("Exiting {}() after {:.3f} sec.".format(func, t_f - t_i))
+        logging.debug("Exiting {} after: {:.3f} sec".format(func, t_f - t_i))
 
     @wraps(func)
     def wrapper(*args, **kwargs):
         """Replacement."""
-        logging.info("Entering {}()..".format(func.__name__))
+        logging.debug("Entering {}".format(func.__name__))
         t_i = time.time()
         try:
             rtn = func(*args, **kwargs)
@@ -155,9 +145,6 @@ def entry_exit(func):
             log_final_time(func.__name__, t_i)
         return rtn
     return wrapper
-
-# CLASSES
-#
 
 
 class TestModule(object):
@@ -192,12 +179,12 @@ class Square(object):
 
     def __repr__(self):
         if self.occupied():
-            return '{0}{1}:{2}'.format(self.file, self.rank, self.piece.symbol)
-        return '{0}{1}:-'.format(self.file, self.rank)
+            return '{}{}:{}'.format(self.file, self.rank, self.piece.symbol)
+        return '{}{}:-'.format(self.file, self.rank)
 
     def __str__(self):
         if self.occupied():
-            return '{0}'.format(self.piece.symbol)
+            return '{}'.format(self.piece.symbol)
         return '-'
 
     def occupied(self):
@@ -225,7 +212,7 @@ class Square(object):
     @staticmethod
     def idx_to_fr(square):
         if square is None or square < 0 or square >= DNUM * DNUM:
-            logging.info('{0}'.format(square))
+            logging.warn('{}'.format(square))
             return None, None
         return FILE[square % DNUM], (square // DNUM) + 1
 
@@ -262,11 +249,11 @@ class Piece(object):
         self.en_passant = False
 
     def __str__(self):
-        return '{0}: {2}({3}) {1}\n'.format(
+        return '{}: {}({}) {}\n'.format(
             self.team,
-            repr(self.square),
             self.symbol,
-            self.point)
+            self.point,
+            repr(self.square))
 
     def active(self):
         return self.square is not None
@@ -315,7 +302,6 @@ class King(Piece):
         self.symbol = 'k' if self.team == 'b' else 'K'
 
     def valid_moves(self, squares):
-        # TODO Use a generator
         idxs = []
         for file, rank in ((0, 1), (1, 1), (1, 0), (1, -1),
                            (0, -1), (-1, -1), (-1, 0), (-1, 1)):
@@ -412,7 +398,7 @@ class Knight(Piece):
         self.symbol = 'n' if self.team == 'b' else 'N'
 
     def valid_moves(self, squares):
-        # TODO Use a generator
+        # TODO Use an iterator
         idxs = []
         for file, rank in ((1, 2), (2, 1), (2, -1), (1, -2),
                            (-1, -2), (-2, -1), (-2, 1), (-1, 2)):
@@ -481,11 +467,6 @@ class Board(object):
         """"""
         self.new_game()
 
-    def reinit(self):
-        self.squares = [Square(idx) for idx in range(DNUM * DNUM)]
-        self.white = []
-        self.black = []
-
     def lookup(self, pos):
         idx = Square.lookup(pos)
         return self.squares[idx] if idx is not None else None
@@ -510,7 +491,9 @@ class Board(object):
         return square and square.occupied()
 
     def new_game(self):
-        self.reinit()
+        self.squares = [Square(idx) for idx in range(DNUM * DNUM)]
+        self.white = []
+        self.black = []
         self.add('w', King, ('e', 1))
         self.add('w', Queen, ('d', 1))
         self.add('w', Rook, ('a', 1))
@@ -569,19 +552,19 @@ class Board(object):
         return self.place(fsquare.piece, tsquare)
 
     def update(self):
-        # Update contended squares
+        # Update contended squares TODO needed?
         pass
 
     def __str__(self):
         """"""
-        rtn = '   {0}\n'.format(' '.join([file.upper() for file in FILE]))
+        rtn = '   {}\n'.format(' '.join([file.upper() for file in FILE]))
         for rank in reversed(RANK):
             rtn += '{0: 2d} '.format(rank)
             for file in FILE:
                 rtn += str(self.lookup((file, rank)))
                 rtn += ' '
             rtn += '{0:d}\n'.format(rank)
-        rtn += '   {0}'.format(' '.join([file.upper() for file in FILE]))
+        rtn += '   {}'.format(' '.join([file.upper() for file in FILE]))
         return rtn
 
 
@@ -595,6 +578,7 @@ class Game(object):
         self.time_black = None
         self.time_white = None
         self.since_capture = None
+        self.moves = [[],[]]
 
     def score(self):
         """"""
@@ -666,24 +650,49 @@ class Game(object):
         return tuple([file, rank])
 
     @staticmethod
-    def parse_move(move):
+    def parse_move(movestr):
         """
 
         Nc3, Nxc3, Nac3, Naxc3, c3, bxc3, b1c3
 
         """
-        move = move.strip()
-        move.replace(' ', '').replace('-', '').replace('?', '')
-        move.replace('!', '').replace('+', '')
-        echelon = move[0].lower() if move[
-            0] in 'KQRBNP' else ''  # TODO unused?
-        if specify:  # TODO Undefined
+        # Cleanup
+        move = movestr.strip()
+        move = move.lower()
+        move.replace('?', '').replace('!', '').replace('+', '')
+
+        logging.debug("Filtered move input: " + move)
+
+        if not move or ' ' in move:
+            raise SyntaxError(movestr)
+
+        if '-' in move:
+            castle = move.split('-')
+            if len(castle) <= 1:
+                from_,to_ = 'o','o'
+            else:
+                from_, to_ = 'o','oo'
+        elif 'x' in move:
+            from_, to_ = move.split('x')
+        else:
+            nums = re.findall('[0-9]+', move)
+
+            if len(nums) > 1:
+                idx = move.find(nums[0]) + len(nums[0])
+                from_ = move[:idx]
+                to_ = move[idx:]
+            else:
+                idx
+
+        logging.debug("Move from, to: {}, {}".format(from_, to_))
+
+        if echelon:
             move = move[1:]
-        capture = 'x' in move
+            capture = 'x' in move
         if capture:
             move.replace('x', '')
         else:
-            move.k  # TODO YAH
+            move.k  # YAH
         file = move[0] in FILE
 
         m1 = re.findall('[a-zA-Z]+', move)
@@ -698,32 +707,40 @@ class Game(object):
         trank = int(m2[1])
         return (ffile, frank), (tfile, trank)
 
-    def run(self):
-        input2_ = ''
+    @staticmethod
+    def request_move():
         while True:
-            os.system('clear')
-            self.board.move(*self.parse_move(input2_))
-            self.board.update()
-            print('Last move: {0}'.format(input2_))
-            print('Score: {0}'.format(self.score()))
+            try:
+                move_input = raw_input()
+                from_, to_ = Game.parse_move(move_input)
+            except SyntaxError as err:
+                logging.warning("Syntax error in move: " + str(err))
+            else:
+                return from_, to_
+
+    def run(self):
+        while True:
+            print("===================================")
+            print(self.to_fen())
+            print('Score: {}'.format(self.score()))
+            # print('Last move: {}'.format(move_input))
             print(self.board)
+            self.board.move(Game.request_move())
+            print("===================================")
+            # self.board.update()
             # for each in self.board.white:
             #     print(each)
-            print(self.to_fen())
-            print('Turn {0}{1}: '.format(self.turn // 2 + 1, 'b' if self.turn % 2
-                                         else 'w'), end='')
-            input2_ = raw_input()
-            self.turn += 1
-
-# FUNCTIONS
-#
+            print('Turn {}{}: '.format(self.turn // 2 + 1, 'b' if self.turn % 2
+                                       else 'w'), end='')
+            # self.turn += 1
+            break
 
 
 def parse_argv():
     "Parse input arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true',
-                        default=False, help='debug')
+                        default=DEBUG, help='debug')
     parser.add_argument('-m', '--post_mortem', action='store_true',
                         default=False, help='enter port mortem on exception')
     parser.add_argument('arg', metavar='A', type=str, nargs='?',
@@ -733,9 +750,6 @@ def parse_argv():
             'debug': opts.debug,
             'post_mortem': opts.post_mortem}
 
-# MAIN
-#
-
 
 @entry_exit
 def main():
@@ -743,15 +757,24 @@ def main():
     game = Game()
     game.run()
 
-# EXECUTION
-#
 if __name__ == '__main__':
     # Global options
     OPT = parse_argv()
+
+    # Configure logger
+    fmat = r'%(asctime)s.%(msecs)-3d | ' + \
+           r'%(levelname)-8s | ' + \
+           r'{0:12s} | '.format(USER) + \
+           r'%(filename)-15s | ' + \
+           r'%(lineno)-5d | ' + \
+           r'%(funcName)-20s | ' + \
+           r'%(message)s'
+    ftime = r'%y-%m-%d %H:%M:%S'
     if OPT.get('debug'):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, format=fmat, datefmt=ftime)
     else:
-        logging.basicConfig(level=logging.WARN)
+        logging.basicConfig(level=logging.WARN, format=fmat, datefmt=ftime)
+    logging.debug("Module loaded at: {}".format(DATE))
 
     # Print any import issues."""
     for each in IMPORT_ERRORS:
