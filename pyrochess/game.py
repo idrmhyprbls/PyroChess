@@ -109,11 +109,11 @@ class Game(object):
         move = move.replace('?', '').replace('!', '')
         move = move.replace('+', '').replace(' ', '-')
 
-        LOG.debug("Filtered move input: " + move)
-
         # No space
-        if not move:
-            raise utils.BadInputWarn('"' + movestr + '" is empty or contains spaces!')
+        if not move or not all([each in utils.ALPHANUMERIC for each in move]):
+            raise utils.BadInputWarn(movestr)
+
+        LOG.debug("Filtered move input: " + move)
 
         # Parse string
         from_str, to_str = '', ''
@@ -153,7 +153,7 @@ class Game(object):
                         from_str = move[:idx]
                         to_str = move[idx:]
         if not from_str and not to_str:
-            raise utils.BadInputWarn('"' + movestr + '" is poorly formatted!')
+            raise utils.BadInputWarn(movestr)
         LOG.debug("Move from, to: {}, {}".format(from_str, to_str))
 
         # Determine echelon
@@ -216,7 +216,7 @@ class Game(object):
             move_input = raw_input()
             echelon, from_str, to_str = Game.parse_move(move_input)
         except utils.BadInputWarn as err:
-            LOG.warning("Syntax error in move: " + str(err))
+            LOG.warning("Syntax error in move: \"{}\"".format(err))
         except EOFError as err:
             LOG.warning("Abort requested")
             raise SystemExit
@@ -237,7 +237,8 @@ class Game(object):
             while True:
                 try:
                     move = self.request_move()
-                    Game.move(*move)
+                    if move is not None:
+                        Game.move(*move)
                 except SystemExit:
                     try:
                         ans = raw_input("Exit, really ([Y]/n)? ")

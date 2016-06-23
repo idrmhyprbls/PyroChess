@@ -4,6 +4,9 @@ from functools import wraps
 import logging
 import exceptions
 import time
+import string
+
+ALPHANUMERIC = string.letters + string.digits
 
 LOG = logging.getLogger(__name__)
 
