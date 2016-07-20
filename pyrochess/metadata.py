@@ -26,12 +26,17 @@ __notes__ = "Run all modules through pyflakes, pylint, & pydoc"
 
 __author__ = "{} {}".format(__creator__, __email__)
 
-with open('./LICENSE') as ifile:
-    __license__ = "".join(ifile.readlines())
-del ifile
+try:
+    with open('./LICENSE') as ifile:
+        __license__ = "".join(ifile.readlines())
+except:
+        __license__ = "BSD-3-Clause"
+else:
+    del ifile
 
 __copyright__ = ""
 for line in __license__.split():
     if 'copyright' in line.lower():
         __copyright__ = line.strip()
+        break
 del line

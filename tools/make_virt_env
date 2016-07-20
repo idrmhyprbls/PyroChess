@@ -1,4 +1,6 @@
-# Create, activate, and install PyroChess
+# Source to create, activate, and install PyroChess
+
+echo 'make_virt_env.sh: Creating, installing, and activating virtual environments!'
 
 POP=0
 
@@ -23,3 +25,6 @@ pip install --editable .
 if [ $POP -gt 0 ] ; then
   popd 1> /dev/null
 fi
+
+# Status
+echo "make_virt_env.sh: Done."

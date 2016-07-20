@@ -1,0 +1,26 @@
+# Source to end current python virtual environment
+
+POP=0
+
+# Must be sourced, not run
+if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]] ; then
+  echo "stop.sh: Error: Source this file!"
+  exit
+fi
+
+# Check if inside folder
+if [ -d ../../PyroChess/tools ] ; then
+  POP+=1
+  pushd .. 1> /dev/null
+fi
+
+# Stop virtual env
+deactivate 2> /dev/null
+
+# Return to previous dir
+if [ $POP -gt 0 ] ; then
+  popd 1> /dev/null
+fi
+
+# Status
+echo "stop_virt_env.sh: Done."

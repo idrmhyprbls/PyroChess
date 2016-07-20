@@ -43,4 +43,6 @@ def main(verbose, debug, unicode, game):
         logging.basicConfig(level=logging.WARN, format=fmat, datefmt=ftime)
     log = logging.getLogger(__name__)
     log.debug("{} begun at: {}".format(__package__, DATE))
+
+    # Main loop
     mainloop()
