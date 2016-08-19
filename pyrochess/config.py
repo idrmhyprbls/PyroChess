@@ -119,4 +119,4 @@ class Settings(object):
         return "Settings(" + ", ".join(["{}={}".format(k, v)
                                         for k, v in self.__dict__.iteritems()]) + ")"
 
-settings = Settings()
+SETTINGS = Settings()

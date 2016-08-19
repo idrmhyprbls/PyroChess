@@ -4,10 +4,10 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import logging
 
-from pyrochess.config import settings
-from pyrochess.metadata import program
+from pyrochess.config import SETTINGS
+from pyrochess.metadata import PROGRAM
 
-LOG = logging.getLogger(program)
+LOG = logging.getLogger(PROGRAM)
 
 class Square(object):
 
@@ -45,7 +45,7 @@ class Square(object):
         elif isinstance(pos, tuple):
             idx = Square.fr_to_idx(*pos)
         elif isinstance(pos, int):
-            if pos >= 0 and pos < settings.dnum * settings.dnum:
+            if pos >= 0 and pos < SETTINGS.dnum * SETTINGS.dnum:
                 idx = pos
             else:
                 LOG.warning("Invalid Square.lookup pos = {}".format(pos))
@@ -55,17 +55,17 @@ class Square(object):
 
     @staticmethod
     def idx_to_fr(square):
-        if square is None or square < 0 or square >= settings.dnum * settings.dnum:
+        if square is None or square < 0 or square >= SETTINGS.dnum * SETTINGS.dnum:
             LOG.warn('{}'.format(square))
             return None, None
-        return settings.file[square %
-                             settings.dnum], (square // settings.dnum) + 1
+        return SETTINGS.file[square %
+                             SETTINGS.dnum], (square // SETTINGS.dnum) + 1
 
     @staticmethod
     def fr_to_idx(file, rank):
-        if rank is None or rank not in settings.rank or file is None or file not in settings.file:
+        if rank is None or rank not in SETTINGS.rank or file is None or file not in SETTINGS.file:
             return None
-        return settings.file.find(file) + (rank - 1) * 8
+        return SETTINGS.file.find(file) + (rank - 1) * 8
 
     @staticmethod
     def box_to_fr(box):

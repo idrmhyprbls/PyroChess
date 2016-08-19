@@ -2,11 +2,12 @@
 
 # Latest:
 
-- 0.4.1 08/2016 - More general cleanup of config/settings/logger
+- 0.4.2 08/2016 - Naming conventions and imports
 
 # Previous versions:
 
-- 0.4.0 08/2016 - Major cleanup of config/settings/logger
+- 0.4.1 08/2016 - More general cleanup of config/settings/logger
+- 0.4.0 07/2016 - Major cleanup of config/settings/logger
 - 0.3.1 06/2016 - Expanded documentation, metadata, folder format, added scripts
 - 0.3.0 06/2016 - Converted original base scripts into a GitHub project
 - 0.2.0 06/2016 - Add funcitonality, including click, user input, parsing, config, and printing

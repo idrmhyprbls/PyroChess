@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 from logging.handlers import RotatingFileHandler
 import logging
 
-from pyrochess.metadata import program as _program
+from pyrochess.metadata import PROGRAM as _PROGRAM
 
 _FMAT = r'%(asctime)s.%(msecs)-3d | ' + \
        r'%(levelname)-8s | ' + \
@@ -28,7 +28,7 @@ def set_log_level(settings):
     else:
         level = logging.WARN
 
-    logger = logging.getLogger(_program)
+    logger = logging.getLogger(_PROGRAM)
     logger.handlers[0].setLevel(level)
 
 def _add_file_handler(settings):
@@ -38,7 +38,7 @@ def _add_file_handler(settings):
                              backupCount=3)
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
-    logger = logging.getLogger(_program)
+    logger = logging.getLogger(_PROGRAM)
     logger.addHandler(fh)
 
 def init_logging(settings):
@@ -46,7 +46,7 @@ def init_logging(settings):
     formatter = logging.Formatter(_FMAT.format(settings.user), _FTIME)
     sh = logging.StreamHandler()
     sh.setFormatter(formatter)
-    logger = logging.getLogger(_program)
+    logger = logging.getLogger(_PROGRAM)
     logger.setLevel(logging.DEBUG)
     logger.addHandler(sh)
     set_log_level(settings)

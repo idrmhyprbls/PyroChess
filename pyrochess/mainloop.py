@@ -13,10 +13,10 @@ except ImportError:
     import pdb
 
 from pyrochess.game import Game
-from pyrochess.metadata import program
+from pyrochess.metadata import PROGRAM
 from pyrochess.utils import entry_exit
 
-LOG = logging.getLogger(program)
+LOG = logging.getLogger(PROGRAM)
 
 @entry_exit(LOG)
 def mainloop():  # cli=True):

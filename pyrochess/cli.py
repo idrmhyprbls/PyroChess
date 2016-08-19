@@ -8,7 +8,7 @@ import sys
 
 import click
 
-from pyrochess import config
+from pyrochess import config # First
 
 from pyrochess.mainloop import mainloop
 from pyrochess import logger
@@ -36,37 +36,33 @@ def main(quiet, verbose, debug, unicode, conf, log, game):
 
     # Reload config file
     if conf is not None:
-        config.settings.load_config(conf)
+        config.SETTINGS.load_config(conf)
 
     # Verbosity
     if quiet is not None:
-        config.settings.quiet = True
-        config.settings.debug = False
-        config.settings.verbose = False
+        config.SETTINGS.quiet = True
+        config.SETTINGS.debug = False
+        config.SETTINGS.verbose = False
     elif debug is not None:
-        config.settings.quiet = False
-        config.settings.debug = True
-        config.settings.verbose = False
+        config.SETTINGS.quiet = False
+        config.SETTINGS.debug = True
+        config.SETTINGS.verbose = False
     elif verbose is not None:
-        config.settings.quiet = False
-        config.settings.debug = False
-        config.settings.verbose = True
-    logger.set_log_level(config.settings)
+        config.SETTINGS.quiet = False
+        config.SETTINGS.debug = False
+        config.SETTINGS.verbose = True
+    logger.set_log_level(config.SETTINGS)
 
     # Game options
     if unicode is not None:
-        config.settings.unicode = True
+        config.SETTINGS.unicode = True
     if game is not None:
-        config.settings.set_game(game)
+        config.SETTINGS.set_game(game)
 
     # Update logging
     if log is not None:
-        config.settings.log = log
-        logger.add_file_handler(config.settings)
+        config.SETTINGS.log = log
+        logger.add_file_handler(config.SETTINGS)
 
     # Main loop
-    from pyrochess.metadata import program
-    # print(loggr.__dict__)
-    # print(loggr.handlers[1].__dict__)
-    # loggr.setLevel(logging.DEBUG)
     mainloop()

@@ -4,13 +4,13 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import logging
 
-from pyrochess.config import settings
+from pyrochess.config import SETTINGS
 from pyrochess.square import Square
 from pyrochess.piece import King, Queen, Rook, Bishop, Knight, Pawn
-from pyrochess.metadata import program
+from pyrochess.metadata import PROGRAM
 from pyrochess import utils
 
-LOG = logging.getLogger(program)
+LOG = logging.getLogger(PROGRAM)
 
 class Board(object):
 
@@ -44,8 +44,8 @@ class Board(object):
     def new_game(self):
         self.squares = [
             Square(idx) for idx in range(
-                settings.dnum *
-                settings.dnum)]
+                SETTINGS.dnum *
+                SETTINGS.dnum)]
 
         self.white = []
         self.black = []
@@ -99,15 +99,15 @@ class Board(object):
 
     def __str__(self):
         """"""
-        rtn = u'   {}\n'.format(u' '.join(settings.file))
-        for rank in reversed(settings.rank):
+        rtn = u'   {}\n'.format(u' '.join(SETTINGS.file))
+        for rank in reversed(SETTINGS.rank):
             rtn += u'{0: 2d} '.format(rank)
-            for file in settings.file:
-                if settings.unicode:
+            for file in SETTINGS.file:
+                if SETTINGS.unicode:
                     rtn += utils.ctu(str(self.lookup((file, rank))))
                 else:
                     rtn += str(self.lookup((file, rank)))
                 rtn += u' '
             rtn += u'{0:d}\n'.format(rank)
-        rtn += u'   {}'.format(' '.join(settings.file))
+        rtn += u'   {}'.format(' '.join(SETTINGS.file))
         return rtn

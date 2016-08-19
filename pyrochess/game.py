@@ -5,14 +5,14 @@ from __future__ import absolute_import, division, print_function, with_statement
 import logging
 import re
 
-from pyrochess.config import settings
+from pyrochess.config import SETTINGS
 from pyrochess.piece import King, Queen, Rook, Bishop, Knight, Pawn
 from pyrochess.board import Board
 from pyrochess.square import Square
-from pyrochess.metadata import program
+from pyrochess.metadata import PROGRAM
 from pyrochess import utils
 
-LOG = logging.getLogger(program)
+LOG = logging.getLogger(PROGRAM)
 
 class Game(object):
 
@@ -48,10 +48,10 @@ class Game(object):
         fen = {}
         fen['lines'] = []
         repeat = 0
-        for rank in reversed(settings.rank):
+        for rank in reversed(SETTINGS.rank):
             line = ''
             repeat = 0
-            for file in settings.file:
+            for file in SETTINGS.file:
                 square = self.board.lookup((file, rank))
                 if square.occupied():
                     if repeat != 0:
@@ -90,7 +90,7 @@ class Game(object):
         pass
 
     def get_move(self, rinput=None):
-        if not settings.testing:
+        if not SETTINGS.testing:
             move_input = raw_input("Enter move: ")
         else:
             move_input = rinput
@@ -125,7 +125,7 @@ class Game(object):
             print(self.to_fen())
             print('Score: {}'.format(self.score()))
             # print('Last move: {}'.format(move_input))
-            if settings.unicode:
+            if SETTINGS.unicode:
                 print(unicode(self.board))
             else:
                 print(self.board)
@@ -136,7 +136,7 @@ class Game(object):
                         self.move(*move)
                 except SystemExit:
                     try:
-                        if not settings.testing:
+                        if not SETTINGS.testing:
                             ans = raw_input("\nExit, really ([Y]/n)? ")
                         else:
                             ans = 'y'
