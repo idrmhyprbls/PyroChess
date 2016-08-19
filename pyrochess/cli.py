@@ -1,48 +1,72 @@
-from __future__ import print_function, with_statement, division
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
 
-from datetime import datetime
-DATE = datetime.isoformat(datetime.today())
 import os
-USER = os.getlogin()
-
-import logging
+import pwd
 import sys
 
-# Third party
 import click
 
-# Internal
-from .main import mainloop
-import config
+from pyrochess import config
 
-@click.command(context_settings=dict(help_option_names=['-h','--help']))
-@click.option('-v','--verbose', is_flag=True, default=False, help='Log at info level')
-@click.option('-d','--debug', is_flag=True, default=False, help='Log at debug level')
-@click.option('-u','--unicode', is_flag=True, default=False, help='Display unicode pieces')
-@click.option('--game', default='normal', type=click.Choice(['normal']), help='Select game type')
-def main(verbose, debug, unicode, game):
-    config.settings.verbose = verbose
-    config.settings.debug = debug
-    config.settings.unicode = unicode
-    config.settings.set_game(game)
+from pyrochess.mainloop import mainloop
+from pyrochess import logger
+from pyrochess import metadata
 
-    # Configure logger
-    fmat = r'%(asctime)s.%(msecs)-3d | ' + \
-           r'%(levelname)-8s | ' + \
-           r'{0:12s} | '.format(USER) + \
-           r'%(filename)-15s | ' + \
-           r'%(lineno)-5d | ' + \
-           r'%(funcName)-20s | ' + \
-           r'%(message)s'
-    ftime = r'%y-%m-%d %H:%M:%S'
-    if config.settings.debug:
-        logging.basicConfig(level=logging.DEBUG, format=fmat, datefmt=ftime)
-    elif config.settings.verbose:
-        logging.basicConfig(level=logging.INFO, format=fmat, datefmt=ftime)
-    else:
-        logging.basicConfig(level=logging.WARN, format=fmat, datefmt=ftime)
-    log = logging.getLogger(__name__)
-    log.debug("{} begun at: {}".format(__package__, DATE))
+@click.command(context_settings=dict(help_option_names=['-h', '--help']),
+               help=metadata.__doc__)
+@click.option('-q', '--quiet',
+              default=None, is_flag=True, help='Stream log at error level')
+@click.option('-v', '--verbose',
+              default=None, is_flag=True, help='Stream log at info level')
+@click.option('-d', '--debug',
+              default=None, is_flag=True, help='Stream log at debug level')
+@click.option('-u', '--unicode',
+              default=None, is_flag=True, help='Display unicode pieces')
+@click.option('--conf',
+              default=None, type=str, help='.ini conf file location [~/.pyrochess]')
+@click.option('--log',
+              default=None, type=str, help='Log file location')
+@click.option('--game',
+              default=None, type=click.Choice(['normal']),
+              help='Select game type')
+def main(quiet, verbose, debug, unicode, conf, log, game):
+         
+
+    # Reload config file
+    if conf is not None:
+        config.settings.load_config(conf)
+
+    # Verbosity
+    if quiet is not None:
+        config.settings.quiet = True
+        config.settings.debug = False
+        config.settings.verbose = False
+    elif debug is not None:
+        config.settings.quiet = False
+        config.settings.debug = True
+        config.settings.verbose = False
+    elif verbose is not None:
+        config.settings.quiet = False
+        config.settings.debug = False
+        config.settings.verbose = True
+    logger.set_log_level(config.settings)
+
+    # Game options
+    if unicode is not None:
+        config.settings.unicode = True
+    if game is not None:
+        config.settings.set_game(game)
+
+    # Update logging
+    if log is not None:
+        config.settings.log = log
+        logger.add_file_handler(config.settings)
 
     # Main loop
+    from pyrochess.metadata import program
+    # print(loggr.__dict__)
+    # print(loggr.handlers[1].__dict__)
+    # loggr.setLevel(logging.DEBUG)
     mainloop()

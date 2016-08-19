@@ -1,35 +1,14 @@
-# LATEST Version
+> Warning: Don't change the format of this file
 
-> The latest version and date are reflected in metadata.py `__version__` and `__date__`.
+# Latest:
 
-## 0.1.1 
+- 0.4.1 08/2016 - More general cleanup of config/settings/logger
 
-> Late June 2016
+# Previous versions:
 
-Expanded documentation, metadata, folder format, added scripts
-
-# PREVIOUS Versions
-
-# 0.1.0 
-
-> Mid June 2016
-
-Converted original base scripts into a GitHub project
-
-# 0.0.1 
-
-> Mid June 2016
-
-Add funcitonality, including click, user input, parsing, config, and printing
-
-# 0.0.0 
-
-> Early June 2016
-
-Original upload to GitHub from code scraps dating over a year ago
-
-# Created
-
-> 1 June, 2015
-
-Base classes for Game, Board, and Pieces created
+- 0.4.0 08/2016 - Major cleanup of config/settings/logger
+- 0.3.1 06/2016 - Expanded documentation, metadata, folder format, added scripts
+- 0.3.0 06/2016 - Converted original base scripts into a GitHub project
+- 0.2.0 06/2016 - Add funcitonality, including click, user input, parsing, config, and printing
+- 0.1.0 06/2016 - Original upload to GitHub from code scraps dating over a year ago
+- 0.0.0 06/2015 - Base classes for Game, Board, and Pieces created

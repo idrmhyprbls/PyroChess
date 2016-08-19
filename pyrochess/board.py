@@ -1,7 +1,16 @@
-from .square import Square
-from .piece import King, Queen, Rook, Bishop, Knight, Pawn
-from .config import settings
-import utils
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
+import logging
+
+from pyrochess.config import settings
+from pyrochess.square import Square
+from pyrochess.piece import King, Queen, Rook, Bishop, Knight, Pawn
+from pyrochess.metadata import program
+from pyrochess import utils
+
+LOG = logging.getLogger(program)
 
 class Board(object):
 
@@ -33,7 +42,10 @@ class Board(object):
         return square and square.occupied()
 
     def new_game(self):
-        self.squares = [Square(idx) for idx in range(settings.dnum * settings.dnum)]
+        self.squares = [
+            Square(idx) for idx in range(
+                settings.dnum *
+                settings.dnum)]
 
         self.white = []
         self.black = []
@@ -99,5 +111,3 @@ class Board(object):
             rtn += u'{0:d}\n'.format(rank)
         rtn += u'   {}'.format(' '.join(settings.file))
         return rtn
-
-

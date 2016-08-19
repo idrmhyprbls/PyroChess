@@ -1,21 +1,34 @@
-import nose
-import nose.tools
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
 
-class TestModule(object):
+import unittest
+# import nose
+# import nose.tools
+
+import pyrochess
+
+class TestModule(unittest.TestCase):
     """Nose test class."""
 
-    def __init__(self, *args, **kwargs):
-        pass
+    # @classmethod
+    # def setUpClass(self):
+    #     pass
 
-    @classmethod
-    def setup_class(cls):
+    # @classmethod
+    # def tearDownClass(self):
+    #     pass
+
+    def setUp(self):
         """Sets up the test."""
+        self.a = 1
+        mainloop.mainloop()
 
-    @classmethod
-    def teardown_class(cls):
+    def tearDown(self):
         """Tears down the test."""
         pass
 
-    def test_main(self):
+    def testMain(self):
         """Test call to main."""
-        nose.tools.eq_(main(), None)
+        # nose.tools.eq_(self.a, 1)
+        assert self.a == 1

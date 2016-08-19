@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
+import logging
+
+from pyrochess.config import settings
+from pyrochess.square import Square
+from pyrochess.metadata import program
+
+LOG = logging.getLogger(program)
+
 class Piece(object):
     point = 0.
 
@@ -29,16 +41,16 @@ class Piece(object):
         return squares
 
     def file_right(self):
-        return FILE[FILE.find(self.square.file) + 1:]
+        return settings.file[settings.file.find(self.square.file) + 1:]
 
     def file_left(self):
-        return reversed(FILE[:FILE.find(self.square.file)])
+        return reversed(settings.file[:settings.file.find(self.square.file)])
 
     def rank_up(self):
-        return RANK[self.square.rank:]
+        return settings.rank[self.square.rank:]
 
     def rank_down(self):
-        return reversed(RANK[:self.square.rank - 1])
+        return reversed(settings.rank[:self.square.rank - 1])
 
     def fr_ur(self):
         return zip(self.file_right(), self.rank_up())
@@ -192,7 +204,7 @@ class Pawn(Piece):
             base_rank = 2
         else:
             step = -1
-            base_rank = DNUM - 1
+            base_rank = settings.dnum - 1
 
         # Captures
         for file_dir in (-1, 1):
@@ -219,6 +231,3 @@ class Pawn(Piece):
                 if not square.occupied():
                     moves.append(square)
         return moves
-
-
-

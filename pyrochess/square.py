@@ -1,10 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
 import logging
 
-from .config import settings
+from pyrochess.config import settings
+from pyrochess.metadata import program
 
-LOG = logging.getLogger(__name__)
+LOG = logging.getLogger(program)
 
 class Square(object):
+
     def __init__(self, idx):
         self.idx = idx
         self.file, self.rank = Square.idx_to_fr(idx)
@@ -52,7 +58,8 @@ class Square(object):
         if square is None or square < 0 or square >= settings.dnum * settings.dnum:
             LOG.warn('{}'.format(square))
             return None, None
-        return settings.file[square % settings.dnum], (square // settings.dnum) + 1
+        return settings.file[square %
+                             settings.dnum], (square // settings.dnum) + 1
 
     @staticmethod
     def fr_to_idx(file, rank):
