@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Omit docstring, is set below from metadata
+from __future__ import absolute_import
 
-from __future__ import absolute_import, division, print_function, with_statement
-
+# 0. Start time
 from datetime import datetime as _datetime
 _DATE = _datetime.isoformat(_datetime.today())
-from logging import getLogger as _getLogger
 
 # 1. Documentation
 from pyrochess import metadata as _metadata
@@ -18,18 +17,31 @@ __credits__ = _metadata.CREDITS
 __package__ = _metadata.PROGRAM
 __version__ = _metadata.VERSION
 VERSION = _metadata.VERSION
-VERSION_INFO = tuple(_metadata.VERSION.split('.'))
+VERSION_INFO = tuple(int(each) for each in _metadata.VERSION.split('.'))
 
-# 2. Expose settings
+# 2. Imports
+__all__ = [
+        'board',
+        'config',
+        'game',
+        'logger',
+        'mainloop',
+        'metadata',
+        'metadata',
+        'piece',
+        'square',
+        'utils']
+
+# 3. Configure settings
 from pyrochess.config import SETTINGS
 
-# 3. Configure logging
+# 4. Configure logging
+from logging import getLogger as _getLogger
 from pyrochess.logger import init_logging as _init_logging
 _init_logging(SETTINGS)
-
-# Log Start
 _log = _getLogger(_metadata.PROGRAM)
-_log.debug("=== {} v{} begun at: {} ===".format(__package__, _metadata.VERSION,
+_log.debug("=== {} v{} begun at: {} ===".format(__package__,
+                                                _metadata.VERSION,
                                                 _DATE))
-if __name__ != '__main__':
-    from pyrochess.mainloop import mainloop
+# 5. Expose main and other chained imports
+from pyrochess.cli import main

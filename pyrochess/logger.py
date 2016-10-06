@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, with_statement
+"""Logging setup"""
+from __future__ import absolute_import
 
 from logging.handlers import RotatingFileHandler
 import logging
@@ -32,7 +33,7 @@ def set_log_level(settings):
     logger.handlers[0].setLevel(level)
 
 def _add_file_handler(settings):
-    formatter = logging.Formatter(_FMAT.format(settings.user), _FTIME)
+    formatter = logging.Formatter(_FMAT.format(settings.env.user), _FTIME)
     fh = RotatingFileHandler(settings.log,
                              maxBytes=1024**2,
                              backupCount=3)
@@ -43,7 +44,7 @@ def _add_file_handler(settings):
 
 def init_logging(settings):
 
-    formatter = logging.Formatter(_FMAT.format(settings.user), _FTIME)
+    formatter = logging.Formatter(_FMAT.format(settings.env.user), _FTIME)
     sh = logging.StreamHandler()
     sh.setFormatter(formatter)
     logger = logging.getLogger(_PROGRAM)
@@ -52,4 +53,3 @@ def init_logging(settings):
     set_log_level(settings)
     if settings.log:
         _add_file_handler(settings)
-

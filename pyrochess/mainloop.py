@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, with_statement
+"""Main update loop"""
+from __future__ import absolute_import
 
 import logging
 import sys
@@ -12,6 +13,7 @@ except ImportError:
     IMPORT_ERRORS.append("Can't import 'pudb', using 'pdb'!")
     import pdb
 
+from pyrochess.config import SETTINGS
 from pyrochess.game import Game
 from pyrochess.metadata import PROGRAM
 from pyrochess.utils import entry_exit

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, with_statement
+"""Game class"""
+from __future__ import absolute_import, division, print_function
 
 import logging
 import re
@@ -10,7 +11,7 @@ from pyrochess.piece import King, Queen, Rook, Bishop, Knight, Pawn
 from pyrochess.board import Board
 from pyrochess.square import Square
 from pyrochess.metadata import PROGRAM
-from pyrochess import utils
+from pyrochess.utils import ALPHANUMERIC, BadInputWarn
 
 LOG = logging.getLogger(PROGRAM)
 
@@ -90,13 +91,13 @@ class Game(object):
         pass
 
     def get_move(self, rinput=None):
-        if not SETTINGS.testing:
-            move_input = raw_input("Enter move: ")
-        else:
+        if rinput:
             move_input = rinput
+        else:
+            move_input = raw_input("Enter move: ")
         try:
             echelon, from_str, to_str = Game.parse_move_str(move_input)
-        except utils.BadInputWarn as err:
+        except BadInputWarn as err:
             LOG.warning("Syntax error in move: \"{}\"".format(err))
         except EOFError as err:
             LOG.info("Abort requested")
@@ -120,98 +121,118 @@ class Game(object):
         pass
 
     def run(self):
-        while True:
-            print("===================================")
-            print(self.to_fen())
-            print('Score: {}'.format(self.score()))
-            # print('Last move: {}'.format(move_input))
-            if SETTINGS.unicode:
-                print(unicode(self.board))
-            else:
-                print(self.board)
+        if not SETTINGS.imported:
             while True:
-                try:
-                    move = self.get_move()
-                    if move is not None:
-                        self.move(*move)
-                except SystemExit:
+                print(self.to_fen())
+                print('Score: {}'.format(self.score()))
+                # print('Last move: {}'.format(move_input))
+                if SETTINGS.unicode:
+                    print(unicode(self.board))
+                else:
+                    print(self.board)
+                while True:
                     try:
-                        if not SETTINGS.testing:
-                            ans = raw_input("\nExit, really ([Y]/n)? ")
-                        else:
-                            ans = 'y'
-                    except EOFError:
-                        raise SystemExit
-                    if not ans or ans[0] in 'yY':
-                        raise SystemExit
-            print("===================================")
-            # self.board.update()
-            # for each in self.board.white:
-            #     print(each)
-            print('Turn {}{}: '.format(self.turn // 2 + 1, 'b' if self.turn % 2
-                                       else 'w'), end='')
-            # self.turn += 1
-            break
+                        move = self.get_move()
+                        if move is not None:
+                            self.move(*move)
+                    except SystemExit:
+                        try:
+                            if not SETTINGS.testing:
+                                ans = raw_input("\nExit, really ([Y]/n)? ")
+                            else:
+                                ans = 'y'
+                        except EOFError:
+                            raise SystemExit
+                        if not ans or ans[0] in 'yY':
+                            raise SystemExit
+                # self.board.update()
+                # for each in self.board.white:
+                #     print(each)
+                print('Turn {}{}: '.format(self.turn // 2 + 1, 'b' if self.turn % 2
+                                        else 'w'), end='')
+                # self.turn += 1
+                break
 
     @staticmethod
     def parse_move_str(movestr):
         """
 
         Pass: Bb3, Bxb3, Bba3, B3b2, Bbxa3, b3, cxb3, b1b3, o-o, O-O-O
-        Fail: Ab3, a3a, 3a, 3a3, a33a, a3a3, a2a1, a333, a3a33, a3z3, a3z
+        Fail: Ab3, a3a, 3a, 3a3, a33a, a3a3, a2a1, a333, a3a33, a3z3, a3z, 000, ad
         TODO: Check above
 
         """
         # Cleanup
-        move = movestr.strip()
-        move = move.replace('?', '').replace('!', '')
-        move = move.replace('+', '').replace(' ', '-')
+        movestr = movestr.strip()
+        movestr = movestr.replace('?', '').replace('!', '')
+        movestr = movestr.replace('+', '').replace(' ', '-')
+        movestr = movestr.replace('X', 'x')
 
         # No space
-        if not move or not all([each in utils.ALPHANUMERIC for each in move]):
-            raise utils.BadInputWarn(movestr)
+        if not movestr or not all([each in (ALPHANUMERIC + '-')
+                for each in movestr]):
+            raise BadInputWarn(movestr)
 
-        LOG.debug("Filtered move input: " + move)
+        LOG.debug("Filtered move input: " + movestr)
 
         # Parse string
         from_str, to_str = '', ''
-        if '-' in move:
-            dash = move.split('-')
+        if '-' in movestr:
+            # *-*, *-*-*
+            dash = movestr.split('-')
             if len(dash) == 2:
-                if dash[0] in 'oO0':
+                if dash[0][0] in 'oO0':
                     from_str = '0'
                     to_str = '0'
                 else:
                     from_str, to_str = dash
-            elif len(dash) == 3 and dash[0] in 'oO0':
+            elif len(dash) == 3 and dash[0][0] in 'oO0':
                 from_str = '0'
                 to_str = '00'
-        elif 'x' in move:
-            from_str, to_str = move.split('x')
-        else:
-            nums = re.findall('[0-9]+', move)
-            if len(nums) > 1:
-                idx = move.find(nums[0]) + len(nums[0])
-                from_str = move[:idx]
-                to_str = move[idx:]
             else:
-                alph = re.findall('[a-z]+', move)
-                if len(alph[0]) == 1:
-                    idx = move.find(alph[0])
-                    from_str = move[:idx]
-                    to_str = move[idx:]
+                raise BadInputWarn(movestr)
+        elif 'x' in movestr:
+            # *x*
+            from_str, to_str = movestr.split('x')
+        else:
+            castle = re.findall('[0oO]+', movestr)
+            if len(castle)==1 and 2<=len(castle[0])<=3:
+                # oo, 000
+                if len(castle[0]) == 2:
+                    from_str = '0'
+                    to_str = '0'
                 else:
-                    lowr = re.findall('[a-z]', move)
-                    if len(lowr) == 1:
-                        idx = move.find(lowr[0])
-                        from_str = move[:idx]
-                        to_str = move[idx:]
+                    from_str = '0'
+                    to_str = '00'
+            else:
+                nums = re.findall('[0-9]+', movestr)
+                if len(nums) > 1:
+                    # *#
+                    idx = movestr.find(nums[0]) + len(nums[0])
+                    from_str = movestr[:idx]
+                    to_str = movestr[idx:]
+                else:
+                    alph = re.findall('[a-z]+', movestr)
+                    if len(alph) and len(alph[0]) == 1:
+                        # **#
+                        idx = movestr.find(alph[0])
+                        from_str = movestr[:idx]
+                        to_str = movestr[idx:]
                     else:
-                        idx = move.find(lowr[0]) + len(lowr[0])
-                        from_str = move[:idx]
-                        to_str = move[idx:]
+                        lowr = re.findall('[a-z]', movestr)
+                        if len(lowr) == 1:
+                            idx = movestr.find(lowr[0])
+                            from_str = movestr[:idx]
+                            to_str = movestr[idx:]
+                        else:
+                            idx = movestr.find(lowr[0]) + len(lowr[0])
+                            if idx >= 0:
+                                from_str = movestr[:idx]
+                                to_str = movestr[idx:]
+                            else:
+                                raise BadInputWarn(movestr)
         if not from_str and not to_str:
-            raise utils.BadInputWarn(movestr)
+            raise BadInputWarn(movestr)
         LOG.debug("Move from, to: {}, {}".format(from_str, to_str))
 
         # Determine echelon

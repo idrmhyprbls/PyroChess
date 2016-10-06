@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, with_statement
+"""Board class"""
+from __future__ import absolute_import, division
 
 import logging
 
@@ -15,33 +16,7 @@ LOG = logging.getLogger(PROGRAM)
 class Board(object):
 
     def __init__(self):
-        """"""
-        self.new_game()
-
-    def lookup(self, pos):
-        idx = Square.lookup(pos)
-        return self.squares[idx] if idx is not None else None
-
-    def place(self, piece, pos):
-        square = self.lookup(pos)
-        if square:
-            if piece.square is not None:  # If not assembling board
-                if square not in piece.valid_moves(
-                        self.squares):  # Check for valid move...
-                    return None
-                piece.square.piece = None  # Remove last location
-            square.clear()  # Capture any piece on square
-            square.piece = piece
-            piece.square = square
-            return piece
-        else:
-            return None
-
-    def occupied(self, pos):
-        square = self.lookup(pos)
-        return square and square.occupied()
-
-    def new_game(self):
+        """New game board."""
         self.squares = [
             Square(idx) for idx in range(
                 SETTINGS.dnum *
@@ -70,6 +45,29 @@ class Board(object):
         self.add('b', Knight, ('g', 8))
         for file in 'abcdefgh':
             self.add('b', Pawn, (file, 7))
+
+    def lookup(self, pos):
+        idx = Square.lookup(pos)
+        return self.squares[idx] if idx is not None else None
+
+    def place(self, piece, pos):
+        square = self.lookup(pos)
+        if square:
+            if piece.square is not None:  # If not assembling board
+                if square not in piece.valid_moves(
+                        self.squares):  # Check for valid move...TODO NO, do this is game, board should just be dumb
+                    return None
+                piece.square.piece = None  # Remove last location
+            square.clear()  # Capture any piece on square
+            square.piece = piece
+            piece.square = square
+            return piece
+        else:
+            return None
+
+    def occupied(self, pos):
+        square = self.lookup(pos)
+        return square and square.occupied()
 
     def add(self, team, cpiece, pos):
         (file, rank) = pos

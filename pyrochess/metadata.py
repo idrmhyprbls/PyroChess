@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""{}
+"""{} v{}
+
+{}
 
 LICENSE
 
@@ -24,7 +26,7 @@ NOTES
 
 """
 
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import with_statement
 
 # Manual entry
 
@@ -56,7 +58,7 @@ AUTHOR = "{} {}".format(CREATOR, EMAIL)
 VERSION = "?.?.?"
 DATE = "??/????"
 try:
-    # Version info must be in ./RELEASE.md !!
+    # Version info MUST be in ./RELEASE.md !!
     with open('./RELEASE.md') as ifile:
         import re
         for each in ifile:
@@ -83,7 +85,7 @@ else:
     del ifile
 
 COPYRIGHT = ""
-for line in LICENSE.split():
+for line in LICENSE.split('\n'):
     if 'copyright' in line.lower():
         COPYRIGHT = line.strip()
         break
@@ -91,4 +93,7 @@ del line
 
 # Docstring
 
-__doc__ = __doc__.format(BRIEF, LICENSE, PROJECT, USAGE, WARNING, NOTES)
+__doc__ = __doc__.format(PROGRAM, VERSION,
+                         BRIEF, LICENSE,
+                         PROJECT, USAGE,
+                         WARNING, NOTES)

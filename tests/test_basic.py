@@ -22,7 +22,7 @@ class TestModule(unittest.TestCase):
     def setUp(self):
         """Sets up the test."""
         self.a = 1
-        mainloop.mainloop()
+        # mainloop.mainloop()
 
     def tearDown(self):
         """Tears down the test."""

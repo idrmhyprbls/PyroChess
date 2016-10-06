@@ -4,8 +4,7 @@ A shi**y chess engine forged in the fires of Python awesomeness.
 
 > (Really this is just an attempt at creating a cohesive GitHub-based project.)
 
-In adhering to D.R.Y. most project info and help can be found in
-`./pyrochess/metadata.py` as well as in the \__doc\__'s.
+> In adhering to D.R.Y. most project info and help can be found in `./pyrochess/metadata.py` as well as in the \__doc\__'s.
 
 ## COPYRIGHT & LICENSE
 
@@ -13,19 +12,17 @@ In adhering to D.R.Y. most project info and help can be found in
 
 ## FEATURES
 
-> See RELEASE.md for a thorough list
-
-  1. Command line interface
-  2. TODO
+  - See RELEASE.md for a thorough list.
 
 ## VERSIONS & RELEASE
 
-  - See metadata.py for latest version, & RELEASE.md for descriptions.
+  - See `pyrochess -h` or `pyrochess -V` for latest version.
+  - See RELEASE.md for release descriptions.
 
 ## HELP, USAGE, WARNING, & NOTES
 
+  - Run `pyrochess -h`.
   - See metadata.py, or read the doc's with pydoc.
-  - Examining/running `./examples/quickstart.sh` should get you started.
 
 ## CONTRIBUTING
 
@@ -34,10 +31,8 @@ In adhering to D.R.Y. most project info and help can be found in
 ## REQUIREMENTS
 
   - See requirements.txt.
-  - I'm running Fedora 21 Linux 64bit and launching PyroChess via gnome-terminal
-    (bash shell with xterm-256color term).
+  - Also see metadata.py for my environment/setup.
 
 ## TODO
 
-  - Run `./scripts/find_notes.sh` to find any todo items, this includes future
-    features.
+  - Run `./scripts/find_notes` to find any todo items.
