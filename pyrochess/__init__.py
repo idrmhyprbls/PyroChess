@@ -16,8 +16,12 @@ __author__ = _metadata.AUTHOR
 __credits__ = _metadata.CREDITS
 __package__ = _metadata.PROGRAM
 __version__ = _metadata.VERSION
+
 VERSION = _metadata.VERSION
-VERSION_INFO = tuple(int(each) for each in _metadata.VERSION.split('.'))
+if '?' not in VERSION:
+    VERSION_INFO = tuple(int(each) for each in _metadata.VERSION.split('.'))
+else:
+    VERSION_INFO = tuple(_metadata.VERSION.split('.'))
 
 # 2. Imports
 __all__ = [
@@ -41,7 +45,8 @@ from pyrochess.logger import init_logging as _init_logging
 _init_logging(SETTINGS)
 _log = _getLogger(_metadata.PROGRAM)
 _log.debug("=== {} v{} begun at: {} ===".format(__package__,
-                                                _metadata.VERSION,
+                                                VERSION,
                                                 _DATE))
 # 5. Expose main and other chained imports
 from pyrochess.cli import main
+

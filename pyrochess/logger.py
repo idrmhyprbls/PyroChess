@@ -3,8 +3,8 @@
 """Logging setup"""
 from __future__ import absolute_import
 
-from logging.handlers import RotatingFileHandler
 import logging
+from logging.handlers import RotatingFileHandler
 
 from pyrochess.metadata import PROGRAM as _PROGRAM
 

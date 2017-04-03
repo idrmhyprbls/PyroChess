@@ -12,6 +12,8 @@ import pwd
 import time
 import string
 import os
+import pdb
+import inspect
 
 # WARNING: No local module imports!
 
@@ -20,6 +22,12 @@ ALPHANUMERIC = string.letters + string.digits
 # Character to unicode
 CTU = {'K': u'♔', 'Q': u'♕', 'R': u'♖', 'B': u'♗', 'N': u'♘', 'P': u'♙',
        'k': u'♚', 'q': u'♛', 'r': u'♜', 'b': u'♝', 'n': u'♞', 'p': u'♟'}
+
+trace = lambda: pdb.set_trace()
+
+def lineno():
+    """Return current line number."""
+    return inspect.currentframe().f_back.f_lineno
 
 class BadInputWarn(exceptions.Warning):
     """Bad user input."""
@@ -101,7 +109,7 @@ class Env(object):
         return sys.version_info[0:3]  # List (python)
     @property
     def vers(self):
-        return '.'.join(str(idx) for idx in ver)  # Str (python)
+        return '.'.join(str(idx) for idx in self.ver)  # Str (python)
 
 def ctu(istr):
     """Convert select ascii characters in string to unicode (image)"""
@@ -109,7 +117,6 @@ def ctu(istr):
     for ch, un in CTU.iteritems():
         ostr = ostr.replace(ch, un)
     return ostr
-
 
 def auto_cast(string_):
     """Auto cast a field via pythonic syntax (eval)."""
